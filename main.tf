@@ -3,7 +3,8 @@ terraform {
   # state in a remote backend.
 
   backend "gcs" {
-   bucket = "tfstate-bucket-sandbox-433522"
+   bucket = "sandbox-433522-storage-bucket"
+   prefix = "buildartifacts/tfplan"
   }
 
   required_providers {

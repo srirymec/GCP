@@ -1,0 +1,37 @@
+steps:
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        apt -qq update && apt -qq install unzip && apt-get -qq install jq
+        git clone --depth=1 https://github.com/tfutils/tfenv.git ./.tfenv
+        ./.tfenv/bin/tfenv use 1.2.3
+        /workspace/.tfenv/versions/1.2.3/terraform init -reconfigure
+        /workspace/.tfenv/versions/1.2.3/terraform validate
+        /workspace/.tfenv/versions/1.2.3/terraform plan -lock=false -input=false -out=tfplan-out
+        /workspace/.tfenv/versions/1.2.3/terraform show -json tfplan-out > plan.json
+        cat plan.json | jq '.resource_changes[] | {address, change: .change.actions}' > readable_plan.json
+        gsutil cp readable_plan.json gs://sandbox-433522-storage-bucket/buildartifacts/tfplan/readable_plan.json
+        
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   args:        
+  #     - 'cp'
+  #     - 'readable_plan.json'
+  #     - 'gs://gps-sandbox-coordinator-artifacts/tfplan/readable_plan.json'
+
+  # - name: 'email-plan'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       gcloud alpha monitoring policies conditions create --policy=projects/YOUR_PROJECT_ID/alertPolicies/POLICY_ID \
+  #         --display-name="Terraform Plan Notification" \
+  #         --condition-name="Terraform Plan Output" \
+  #         --filter="resource.type = 'global' AND resource.label.type = 'cloudbuild.googleapis.com/build' AND logName = 'projects/YOUR_PROJECT_ID/logs/cloudbuild'" \
+  #         --condition="gt(0)" \
+  #         --notification-channel=6802751377893866439 \
+  #         --message="The Terraform plan output is available at https://storage.cloud.google.com/gps-sandbox-coordinator-artifacts/tfplan/readable_plan.json"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
