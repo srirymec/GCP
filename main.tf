@@ -4,7 +4,7 @@ terraform {
 
   backend "gcs" {
    bucket = "sandbox-433522-storage-bucket"
-   prefix = "buildartifacts/tfplan"
+   prefix = "tfstate"
   }
 
   required_providers {
