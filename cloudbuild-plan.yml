@@ -21,7 +21,7 @@ steps:
         echo "--------------------------------------  TF PLAN  ------------------------------------------"
         cat plan.json | jq '.resource_changes[] | {address, change: .change.actions}'
         echo "$create_count to add, $update_count to change, $delete_count to destroy."
+        gcloud pubsub topics publish projects/sandbox-433522/topics/send-test-email --message='Terraform plan is ready for review. Please approve.'
         
-
 options:
   logging: CLOUD_LOGGING_ONLY

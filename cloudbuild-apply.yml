@@ -1,0 +1,16 @@
+steps:
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        apt -qq update && apt -qq install unzip && apt-get -qq install jq
+        git clone --depth=1 https://github.com/tfutils/tfenv.git ./.tfenv
+        ./.tfenv/bin/tfenv use 1.2.3
+        /workspace/.tfenv/versions/1.2.3/terraform init -reconfigure
+        /workspace/.tfenv/versions/1.2.3/terraform validate
+        gsutil cp gs://sandbox-433522-storage-bucket/buildartifacts/tfplan/tfplan-out .
+        /workspace/.tfenv/versions/1.2.3/terraform apply -lock=false -input=false tfplan-out        
+
+options:
+  logging: CLOUD_LOGGING_ONLY
