@@ -3,9 +3,9 @@ steps:
     name: 'hashicorp/terraform:1.2.3'
     entrypoint: 'sh'
     args: 
-  - '-c'
-  - |
-    terraform init -reconfigure
+    - '-c'
+    - |
+        terraform init -reconfigure
   - id: 'tf plan'
     name: 'hashicorp/terraform:1.2.3'
     entrypoint: 'sh'
