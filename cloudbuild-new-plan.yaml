@@ -1,11 +1,11 @@
 steps:
   - id: 'tf init'
     name: 'hashicorp/terraform:1.2.3'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args: ['-c', 'terraform init -reconfigure']
   - id: 'tf plan'
     name: 'hashicorp/terraform:1.2.3'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args: ['-c', 'terraform plan -lock=false -input=false -out=tfplan-out']
   # - name: 'gcr.io/cloud-builders/git'
   #   entrypoint: 'bash'
