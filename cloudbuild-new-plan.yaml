@@ -1,0 +1,36 @@
+steps:
+  - id: 'tf init'
+    name: 'hashicorp/terraform:1.2.3'
+    entrypoint: 'bash'
+    args: ['-c', 'terraform init -reconfigure']
+  - id: 'tf plan'
+    name: 'hashicorp/terraform:1.2.3'
+    entrypoint: 'bash'
+    args: ['-c', 'terraform plan -lock=false -input=false -out=tfplan-out']
+  # - name: 'gcr.io/cloud-builders/git'
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       apt -qq update && apt -qq install unzip && apt-get -qq install jq
+  #       git clone --depth=1 https://github.com/tfutils/tfenv.git ./.tfenv
+  #       ./.tfenv/bin/tfenv use 1.2.3
+  #       /workspace/.tfenv/versions/1.2.3/terraform init -reconfigure
+  #       /workspace/.tfenv/versions/1.2.3/terraform validate
+  #       /workspace/.tfenv/versions/1.2.3/terraform plan -lock=false -input=false -out=tfplan-out
+  #       /workspace/.tfenv/versions/1.2.3/terraform show -json tfplan-out > plan.json
+  #       gsutil cp tfplan-out gs://sandbox-433522-storage-bucket/buildartifacts/tfplan/tfplan-out
+  #       create_count=0
+  #       update_count=0
+  #       delete_count=0
+  #       create_count=$(jq '[.resource_changes[] | select(.change.actions[] == "create")] | length' plan.json)
+  #       update_count=$(jq '[.resource_changes[] | select(.change.actions[] == "update")] | length' plan.json)
+  #       delete_count=$(jq '[.resource_changes[] | select(.change.actions[] == "delete")] | length' plan.json)
+  #       echo "--------------------------------------  TF PLAN  ------------------------------------------"
+  #       cat plan.json | jq '.resource_changes[] | {address, change: .change.actions}'
+  #       echo "$create_count to add, $update_count to change, $delete_count to destroy."
+  #       gcloud pubsub topics publish projects/sandbox-433522/topics/send-test-email --message='Terraform plan is ready for review. Please approve.'
+        
+options:
+  logging: CLOUD_LOGGING_ONLY
+
